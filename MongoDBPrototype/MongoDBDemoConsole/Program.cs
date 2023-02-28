@@ -1,21 +1,38 @@
-﻿using MongoDB.Driver;
+﻿using MongoDataAccess.DataAccess;
+using MongoDataAccess.Models;
+using MongoDB.Driver;
 using MongoDBPrototype;
 
-string connectionString = "mongodb://localhost:27017";
-string databaseName = "simple_db";
-string collectionName = "people";
 
-var client = new MongoClient(connectionString);
-var db = client.GetDatabase(databaseName);
-var collection = db.GetCollection<PersonModel>(collectionName);
+//string connectionString = "mongodb://localhost:27017";
+//string databaseName = "simple_db";
+//string collectionName = "people";
 
-var person = new PersonModel { FirstName = "Simple", LastName = "Sketche" };
+//var client = new MongoClient(connectionString);
+//var db = client.GetDatabase(databaseName);
+//var collection = db.GetCollection<PersonModel>(collectionName);
 
-await collection.InsertOneAsync(person);
+//var person = new PersonModel { FirstName = "Simple", LastName = "Sketche" };
 
-var results = await collection.FindAsync(_ => true);
+//await collection.InsertOneAsync(person);
 
-foreach(var result in results.ToList())
+//var results = await collection.FindAsync(_ => true);
+
+//foreach(var result in results.ToList())
+//{
+//    Console.WriteLine($"{result.Id}: First name: {result.FirstName}. Last name: {result.LastName}");
+//}
+
+ChoreDataAccess db = new ChoreDataAccess();
+
+await db.CreateUser(new UserModel()
 {
-    Console.WriteLine($"{result.Id}: First name: {result.FirstName}. Last name: {result.LastName}");
-}
+    FirstName = "Simple",
+    LastName = "Sketche"
+});
+
+var users = await db.GetAllUsers();
+
+var chore = new ChoreModel() { AssignedTo = users.First(), ChoreText = "Pick up trash!", FrequencyInDays= 1 };
+
+await db.CreateChore(chore);
